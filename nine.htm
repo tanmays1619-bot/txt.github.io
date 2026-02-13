@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wait... You??</title>
+    <style>
+        :root {
+            --pink-primary: #ff85a2;
+            --pink-hover: #ef476f;
+            --pink-soft: #ffe5ec;
+            --white: #ffffff;
+            --text-color: #d63384;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--pink-soft);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Music Toggle UI */
+        #musicToggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid var(--pink-primary);
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            z-index: 2000;
+            transition: transform 0.2s;
+        }
+        
+        #musicToggle:hover { transform: scale(1.1); }
+
+        /* Floating Background */
+        .bg-hearts {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .heart-particle {
+            position: absolute;
+            animation: float 5s linear infinite;
+            opacity: 0.7;
+            user-select: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(110vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 15px 35px rgba(255, 133, 162, 0.3);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            border: 5px solid var(--white);
+            position: relative;
+        }
+
+        h1 { color: var(--text-color); font-size: 2.2rem; margin-bottom: 5px; }
+        p.tease { color: #ff4d6d; font-style: italic; margin-bottom: 20px; font-weight: bold; }
+
+        .img-box {
+            width: 100%;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+        }
+        .img-box img { width: 100%; display: block; }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        button {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 220px;
+        }
+
+        #yesBtn {
+            background-color: var(--pink-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 133, 162, 0.4);
+        }
+
+        #noBtn { background-color: #bdc3c7; color: white; z-index: 1000; }
+
+        .hidden { display: none; }
+        #celebration h2 { color: var(--pink-hover); font-size: 2rem; }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="audio.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicToggle">🔇</button>
+
+    <div class="bg-hearts" id="bgHearts"></div>
+
+    <div class="container">
+        <div id="questionArea">
+            <h1>You? Really?</h1>
+            <p class="tease">I promise I won't tell anyone... maybe. 😉</p>
+            
+            <div class="img-box">
+                <img src="https://media1.tenor.com/m/jvsVBSMabc4AAAAd/rose-cat-give-give-rose-to-cat.gif" alt="Cute Valentine Cat">
+            </div>
+
+            <div class="button-group">
+                <button id="noBtn">No way 🙄</button>
+                <button id="yesBtn">Yes, please! ❤️</button>
+            </div>
+        </div>
+
+        <div id="celebration" class="hidden">
+            <div class="img-box">
+                <img src="https://media.tenor.com/fFCljjEa_iQAAAAi/cat-kiss.gif" alt="Happy Dance">
+            </div>
+            <h2>I knew you'd cave! 🥰</h2>
+            <p>Best decision you've made all day.</p>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        const toggle = document.getElementById('musicToggle');
+        const bg = document.getElementById('bgHearts');
+        const items = ['❤️', '💖', '✨', '🍭', '🌸'];
+
+        function createElement() {
+            const el = document.createElement('div');
+            el.className = 'heart-particle';
+            el.innerText = items[Math.floor(Math.random() * items.length)];
+            el.style.left = Math.random() * 100 + 'vw';
+            el.style.fontSize = (Math.random() * 20 + 15) + 'px';
+            el.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            bg.appendChild(el);
+            setTimeout(() => el.remove(), 5000);
+        }
+        setInterval(createElement, 300);
+
+        // Music Control
+        toggle.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                toggle.innerText = '🔊';
+            } else {
+                music.pause();
+                toggle.innerText = '🔇';
+            }
+        });
+
+        const noBtn = document.getElementById('noBtn');
+        noBtn.addEventListener('mouseover', moveButton);
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveButton(); });
+
+        function moveButton() {
+            // Secretly start music if they try to dodge
+            if(music.paused) {
+                music.play().then(() => toggle.innerText = '🔊');
+            }
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+        }
+
+        const yesBtn = document.getElementById('yesBtn');
+        const questionArea = document.getElementById('questionArea');
+        const celebration = document.getElementById('celebration');
+
+        yesBtn.addEventListener('click', () => {
+            music.play().then(() => toggle.innerText = '🔊');
+            questionArea.classList.add('hidden');
+            celebration.classList.remove('hidden');
+            for(let i=0; i<100; i++) { setTimeout(createElement, i * 10); }
+        });
+    </script>
+</body>
+</html>
